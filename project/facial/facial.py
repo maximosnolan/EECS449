@@ -1,27 +1,32 @@
-import face_recognition
+import face_recognition as facRec
 import os
+
+
+# Define paths
 
 imagePath = "./images/"
 testImagePath = "./testImages/"
+
 encodingList = dict()
 
+
+# Parse all images w.r.t path
 def performImageParsing(imagePath):
     dir_list = os.listdir(imagePath)
     for image in dir_list:
         print("Encoding image " + image)
-        picture = face_recognition.load_image_file(imagePath + image)
-        encodedPicture = face_recognition.face_encodings(picture)
+        picture = facRec.load_image_file(imagePath + image)
+        encodedPicture = facRec.face_encodings(picture)
         if len(encodedPicture) == 0:
-            print("ERROR: Unable to process face for image " + image)
+            print("ERROR: Unable to process face for image {}".format(image))
         else:
-            encodingList[image] = encodedPicture
+            encodingList[image] = encodedPicture[0]
 
 
 def determineMatch(encodedImageIn):
-    #encodedImageIn = face_recognition.load_image_file(imagePath + image)
     print("STARTING: matching process with {} Images".format(len(encodingList)))
     for imageName, encodedPic in encodingList.items():
-        result = face_recognition.compare_faces([encodedPic], encodedImageIn)
+        result = facRec.compare_faces([encodedPic], encodedImageIn)
         print(result)
         print("Seeing if this person is {}".format(imageName))
         if len(result) == 0:
@@ -31,31 +36,19 @@ def determineMatch(encodedImageIn):
             return
 
 
+def parseTestImage(imageName):
+    testImage = facRec.load_image_file(imagePath + imageName)
+    encodedImageIn = facRec.face_encodings(testImage)
+    if len(encodedImageIn) == 0:
+        return nil
+    return encodedImageIn[0]
+
+
 def main():
     performImageParsing(imagePath)
-    testImage = face_recognition.load_image_file(imagePath + "golfsteak0.jpg")
-    encodedImageIn = face_recognition.face_encodings(testImage)[0]
+    encodedImageIn = parseTestImage("golfsteak0.jpg")
     determineMatch(encodedImageIn)
     return
 
-
-
-
-
-
-#if __name__ == "__main__":
-#    main()
-
-
-
-# picture = face_recognition.load_image_file(imagePath + "golfsteak0.jpg")
-# my_face_encoding = face_recognition.face_encodings(picture)[0]
-
-# unknownFace =  face_recognition.load_image_file(imagePath + "golfsteak2.jpg")
-# print(face_recognition.face_encodings(unknownFace))
-# unknown_face_encoding = face_recognition.face_encodings(unknownFace)[0]
-# results = face_recognition.compare_faces([my_face_encoding], unknown_face_encoding)
-# if results[0]:
-#    print("SAME PERSON")
-# else:
-#    print("NOT SAME PERSON")
+if __name__ == "__main__":
+    main()
