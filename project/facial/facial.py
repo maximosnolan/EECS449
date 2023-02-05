@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import face_recognition as facRec
 import os
 
@@ -37,7 +39,7 @@ def determineMatch(encodedImageIn):
 
 
 def parseTestImage(imageName):
-    testImage = facRec.load_image_file(imagePath + imageName)
+    testImage = facRec.load_image_file(testImagePath + imageName)
     encodedImageIn = facRec.face_encodings(testImage)
     if len(encodedImageIn) == 0:
         return nil
@@ -46,7 +48,7 @@ def parseTestImage(imageName):
 
 def main():
     performImageParsing(imagePath)
-    encodedImageIn = parseTestImage("golfsteak0.jpg")
+    encodedImageIn = parseTestImage("maximostest1.jpg")
     determineMatch(encodedImageIn)
     return
 
