@@ -11,7 +11,6 @@ from exceptions import FaceAlreadyExistsException
 SIMILARITY_THRESHOLD = 0.6
 FACE_COLLECTION_NAME = 'faces'
 
-
 def get_encodings(image_path: Path) -> List[np.array]:
     """
     :param      image_path: Path to the image to encode
@@ -19,7 +18,7 @@ def get_encodings(image_path: Path) -> List[np.array]:
                 contains the encoding of a face detected in the image
     """
     return face_recognition.face_encodings(
-        face_recognition.load_image_file(image_path))
+        face_recognition.load_image_file(image_path), num_jitters=10, model='large')
 
 
 def register_face(face_encoding: np.array, name: str, birthday: str, relations: Dict):
@@ -82,18 +81,32 @@ def search(face_encoding: np.array) -> List[ScoredPoint]:
 
 if __name__ == '__main__':
     # Init qdrant client
-    qdrant_client = QdrantClient(host='localhost', port=6333)
+    with open('qdrant_key.txt', 'r') as f:
+        hostname = f.readline().rstrip()
+        key = f.readline().rstrip()
+
+    qdrant_client = QdrantClient(host=hostname,
+                                 api_key=key)
 
     image_list = Path('images').glob('*.jpg')
     for image in image_list:
         encodings = get_encodings(image)
         if len(encodings) == 1:
+            if image == Path('images/jason1.jpg'):
+                jason_encoding = encodings[0]
+            elif image == Path('images/sophia.jpg'):
+                sophia_encoding = encodings[0]
+            elif image == Path('images/miguel.jpg'):
+                miguel_encoding = encodings[0]
             print(f'Registering {image}')
             try:
                 register_face(encodings[0], image, 'MM-DD-YYYY', {})
             except FaceAlreadyExistsException as e:
                 print(e)
 
+    print(np.linalg.norm(miguel_encoding - jason_encoding))
+
     encoding = get_encodings('testImages/maximostest1.jpg')[0]
     print(search(encoding))
+
 
