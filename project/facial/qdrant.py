@@ -30,7 +30,6 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
     :param relations:
     :return:
     """
-
     # Hash is used as the point's ID and should be a one-to-one
     # correspondence to a person in the database
     user_hash = int(hashlib.sha256(f'{name}-{birthday}'.encode('utf-8')).hexdigest(), 16) % (10 ** 18)
@@ -46,7 +45,7 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
             f'birthday as: {results[0].payload["name"]}')
 
     # Scan the database for a similar face
-    results = search(face_encoding)
+    results = search(qdrant_client, face_encoding)
     if len(results) == 1:
         raise FaceAlreadyExistsException(
             f'Trying to register a face that matches already '
@@ -70,12 +69,13 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
     print(f'Registered {image} with ID {user_hash}')
 
 
-def search(face_encoding: np.array) -> List[ScoredPoint]:
-    return qdrant_client.search(
+def search(client: QdrantClient, face_encoding: np.array) -> List[ScoredPoint]:
+    return client.search(
         collection_name=FACE_COLLECTION_NAME,
         query_vector=list(face_encoding),
         limit=1,
-        score_threshold=SIMILARITY_THRESHOLD
+        score_threshold=SIMILARITY_THRESHOLD,
+        with_payload=True
     )
 
 
@@ -89,6 +89,7 @@ if __name__ == '__main__':
                                  api_key=key)
 
     image_list = Path('images').glob('*.jpg')
+
     for image in image_list:
         encodings = get_encodings(image)
         if len(encodings) == 1:
@@ -104,9 +105,13 @@ if __name__ == '__main__':
             except FaceAlreadyExistsException as e:
                 print(e)
 
+    
+    
     print(np.linalg.norm(miguel_encoding - jason_encoding))
 
     encoding = get_encodings('testImages/maximostest1.jpg')[0]
     print(search(encoding))
+
+
 
 
