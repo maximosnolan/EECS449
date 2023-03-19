@@ -29,7 +29,8 @@ def request_image():
             print(encoded_im.decode('utf-8'))
             return None
 
-        image, height, width = encoded_im.split(b'-')
+        print(encoded_im.count(b'!~!'))
+        image, height, width = encoded_im.split(b'!~!')
         height = int.from_bytes(height, 'little')
         width = int.from_bytes(width, 'little')
 
