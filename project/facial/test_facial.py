@@ -22,24 +22,27 @@ if __name__ == '__main__':
     test_list = Path('testImages').glob('*.jpg')
     for image in test_list:
         encoding = get_encodings(image)
-        # if image == Path('testImages/jason0.jpg'):
-        #     res = search(encoding[0])
-        #     print(res)
         if image == Path('testImages/miguel.jpg'):
             res = search(qdrant_client,encoding[0])
-            p = serializeQdrant.person(res[0].payload)
-            print(p.getName)
+            serializedPayload = serializeQdrant.person(res[0].payload)
             assert res[0].payload["name"] == "Miguel"
-            update = ["this person is my father"]
-            p.updateRelationships(update)
-            p.updateLastDateOfVisit
-            print("pulled visit", p.pullRelationships())
-        # elif image == Path('testImages/maximostest0.jpg'):
-        #     res = search(encoding[0])
-        #     print(res)
-        # elif image == Path('testImages/golfsteak1.jpg'):
-        #     res = search(encoding[0])
-        #     print(res)
+            updateRelationship = ["person is my father"]
+            serializedPayload.updateRelationships(updateRelationship, "ADD")
+            serializedPayload.updateLastDateOfVisit
+            assert serializedPayload.pullRelationships().count(updateRelationship[0]) == 1
+            assert serializedPayload.getListOfPeopleKnown.count("maximos") == 1
+            serializedPayload.updateRelationships(updateRelationship, "DELETE")
+            assert serializedPayload.pullRelationships().count(updateRelationship[0]) == 0
+            newPeople = ["doowan"]
+            serializedPayload.updateListOfPeopleKnown(newPeople, "ADD")
+            assert serializedPayload.getListOfPeopleKnown.count("maximos") == 1
+            assert serializedPayload.getListOfPeopleKnown.count("doowan") == 1
+            # See if changes are persistent in database
+            knownPeople = serializedPayload.pullKnownPeople()
+            assert knownPeople.count("doowan") == 1
+            assert knownPeople.count("maximos") == 1
+            serializedPayload.updateListOfPeopleKnown(newPeople, "DELETE")
+            assert serializedPayload.getListOfPeopleKnown.count("doowan") == 0
         elif image == Path('testImages/maximostest1.jpg'):
             res = search(qdrant_client,encoding[0])
             assert res[0].payload["name"] == "Max"
