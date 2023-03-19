@@ -7,7 +7,7 @@ import hashlib
 from typing import Dict, List
 from exceptions import FaceAlreadyExistsException
 from qdrant import search, get_encodings, register_face
-from facial import parseTestImage
+#from facial import parseTestImage
 import serializeQdrant
 
 
@@ -32,7 +32,8 @@ if __name__ == '__main__':
             assert res[0].payload["name"] == "Miguel"
             update = ["this person is my father"]
             p.updateRelationships(update)
-            print(p.pullRelationships)
+            p.updateLastDateOfVisit
+            print("pulled visit", p.pullRelationships())
         # elif image == Path('testImages/maximostest0.jpg'):
         #     res = search(encoding[0])
         #     print(res)
