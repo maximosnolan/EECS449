@@ -32,8 +32,9 @@ def main():
                         clientsocket.sendall(image.encode('utf-8'))
                     else:
                         image, h, w = image
-                        image += (b'-' + h.to_bytes(4, 'little') +
-                                  b'-' + w.to_bytes(4, 'little'))
+                        print(image.count(b'!~!'))
+                        image += (b'!~!' + h.to_bytes(4, 'little') +
+                                  b'!~!' + w.to_bytes(4, 'little'))
                         clientsocket.sendall(image)
 
 
