@@ -6,7 +6,7 @@ import numpy as np
 import hashlib
 from typing import Dict, List
 from exceptions import FaceAlreadyExistsException
-
+from datetime import datetime
 # Constants
 SIMILARITY_THRESHOLD = 0.54
 FACE_COLLECTION_NAME = 'faces'
@@ -61,7 +61,9 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
                 payload={
                     'name': name,
                     'birthday': birthday,
-                    'relations': relations
+                    'relations': relations,
+                    'lastVisitDate' : datetime.today().strftime('%Y-%m-%d'),
+                    'numberOfVisits': 0
                 }
             )
         ]
@@ -105,13 +107,9 @@ if __name__ == '__main__':
             except FaceAlreadyExistsException as e:
                 print(e)
 
-    
-    
+
+
     print(np.linalg.norm(miguel_encoding - jason_encoding))
 
     encoding = get_encodings('testImages/maximostest1.jpg')[0]
-    print(search(encoding))
-
-
-
-
+    #print(search(encoding))

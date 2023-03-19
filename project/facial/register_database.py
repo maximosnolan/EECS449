@@ -7,13 +7,13 @@ import hashlib
 from typing import Dict, List
 from exceptions import FaceAlreadyExistsException
 from qdrant import get_encodings,search
- 
+from datetime import datetime
 # Constants
 SIMILARITY_THRESHOLD = 0.6
 FACE_COLLECTION_NAME = 'faces'
 
 
-def register_face(face_encoding: np.array, name: str, birthday: str, relations: Dict):
+def register_face(face_encoding: np.array, name: str, birthday: str, relations: list[str]):
     """
     Registers a face in the database
     :param face_encoding:
@@ -53,7 +53,10 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
                 payload={
                     'name': name,
                     'birthday': birthday,
-                    'relations': relations
+                    'relations': relations,
+                    'lastVisitDate' : datetime.today().strftime('%Y-%m-%d'),
+                    'numberOfVisits': 0
+
                 }
             )
         ]
@@ -61,7 +64,7 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
     print(f'Registered {image} with ID {user_hash}')
 
 # Register our faces
-# Need to tune similarity threshold before Sophia can be registered 
+# Need to tune similarity threshold before Sophia can be registered
 
 if __name__ == '__main__':
     # Init qdrant client
@@ -78,38 +81,38 @@ if __name__ == '__main__':
         if len(encodings) == 1:
             if image == Path('images/jason1.jpg'):
                 try:
-                    register_face(encodings[0], "Jason", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Jason", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             elif image == Path('images/danny.jpg'):
                 try:
-                    register_face(encodings[0], "Danny", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Danny", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             elif image == Path('images/sophia.jpg'):
                 try:
-                    register_face(encodings[0], "Sophia", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Sophia", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             elif image == Path('images/miguel.jpg'):
                 try:
-                    register_face(encodings[0], "Miguel", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Miguel", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             elif image == Path('images/golfsteak2.jpg'):
                 try:
-                    register_face(encodings[0], "Zack", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Zack", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             elif image == Path('images/maximos0.jpg'):
                 try:
-                    register_face(encodings[0], "Max", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Max", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
 
             elif image == Path('images/ruhaan.jpg'):
                 try:
-                    register_face(encodings[0], "Ruhaan", 'MM-DD-YYYY', {})
+                    register_face(encodings[0], "Ruhaan", 'MM-DD-YYYY', [])
                 except FaceAlreadyExistsException as e:
                     print(e)
             print(f'Registering {image}')

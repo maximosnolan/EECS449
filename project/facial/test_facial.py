@@ -8,7 +8,7 @@ from typing import Dict, List
 from exceptions import FaceAlreadyExistsException
 from qdrant import search, get_encodings, register_face
 from facial import parseTestImage
-
+import serializeQdrant
 
 
 if __name__ == '__main__':
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     qdrant_client = QdrantClient(host=hostname,
                                  api_key=key)
-    
+
     test_list = Path('testImages').glob('*.jpg')
     for image in test_list:
         encoding = get_encodings(image)
@@ -27,7 +27,12 @@ if __name__ == '__main__':
         #     print(res)
         if image == Path('testImages/miguel.jpg'):
             res = search(qdrant_client,encoding[0])
+            p = serializeQdrant.person(res[0].payload)
+            print(p.getName)
             assert res[0].payload["name"] == "Miguel"
+            update = ["this person is my father"]
+            p.updateRelationships(update)
+            print(p.pullRelationships)
         # elif image == Path('testImages/maximostest0.jpg'):
         #     res = search(encoding[0])
         #     print(res)
@@ -39,10 +44,4 @@ if __name__ == '__main__':
             assert res[0].payload["name"] == "Max"
         elif image == Path('testImages/rand.jpg'):
             res = search(qdrant_client,encoding[0])
-            assert not res 
-
- 
-            
-
-    
-
+            assert not res
