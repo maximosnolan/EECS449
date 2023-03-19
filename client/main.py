@@ -2,12 +2,24 @@ import argparse
 import socket
 import numpy as np
 import cv2
+from qdrant_client import QdrantClient
+
+
 
 def main():
-    request_image()
+    with open('qdrant_key.txt', 'r') as f:
+        hostname = f.readline().rstrip()
+        key = f.readline().rstrip()
+
+    qdrant_client = QdrantClient(host=hostname,
+                                 api_key=key)
 
 
 def request_image():
+    """
+    :return: (H x W x 3) (RGB) np.ndarray representing the image
+             captured on the doorbell, or None if no image was captured
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect(('localhost', 9925))
         sock.sendall('E'.encode('utf-8'))
@@ -25,13 +37,16 @@ def request_image():
             message_chunks.append(data)
 
         encoded_im = b''.join(message_chunks)
-        image, height, width = encoded_im.split(b'-')  # split by null terminator
+        if encoded_im == b'No image was captured from the camera.':
+            print(encoded_im.decode('utf-8'))
+            return None
+
+        image, height, width = encoded_im.split(b'-')
         height = int.from_bytes(height, 'little')
         width = int.from_bytes(width, 'little')
-        image = np.frombuffer(image, dtype=np.uint8).reshape((height, width, 3))
-        # print(image)
-        # cv2.imshow('boingus', image)
-        # cv2.waitKey(0)
+
+        return np.flip(np.frombuffer(image, dtype=np.uint8).reshape((height, width, 3)), axis=2)
+
 
 if __name__ == "__main__":
     main()
