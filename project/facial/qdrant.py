@@ -8,7 +8,7 @@ from typing import Dict, List
 from exceptions import FaceAlreadyExistsException
 
 # Constants
-SIMILARITY_THRESHOLD = 0.6
+SIMILARITY_THRESHOLD = 0.54
 FACE_COLLECTION_NAME = 'faces'
 
 def get_encodings(image_path: Path) -> List[np.array]:
