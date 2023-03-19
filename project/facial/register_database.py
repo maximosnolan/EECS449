@@ -86,6 +86,11 @@ if __name__ == '__main__':
                     register_face(encodings[0], "Danny", 'MM-DD-YYYY', {})
                 except FaceAlreadyExistsException as e:
                     print(e)
+            elif image == Path('images/sophia.jpg'):
+                try:
+                    register_face(encodings[0], "Sophia", 'MM-DD-YYYY', {})
+                except FaceAlreadyExistsException as e:
+                    print(e)
             elif image == Path('images/miguel.jpg'):
                 try:
                     register_face(encodings[0], "Miguel", 'MM-DD-YYYY', {})
