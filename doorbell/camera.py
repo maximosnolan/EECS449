@@ -8,7 +8,6 @@ def main():
         sock.bind(("localhost", 9925))
         sock.listen()
 
-        # Block for a max of 1 second
         sock.settimeout(1)
 
         while True:
@@ -30,11 +29,11 @@ def main():
                     image = capture_image()
                     if not image:
                         image = 'No image was captured from the camera.'
-                        print(image)
                         clientsocket.sendall(image.encode('utf-8'))
                     else:
                         image, h, w = image
-                        image += b'-' + h.to_bytes(4, 'little') + b'-' + w.to_bytes(4, 'little')
+                        image += (b'-' + h.to_bytes(4, 'little') +
+                                  b'-' + w.to_bytes(4, 'little'))
                         clientsocket.sendall(image)
 
 
@@ -44,14 +43,10 @@ def capture_image():
     :return: The encoded image from the camera, or an empty string
              if no image was captured
     """
-    # TODO this device # is messed up
-    cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1920)
-
+    cam = cv2.VideoCapture(0)
     result, image = cam.read()
-    print(image)
-    return (image.flatten().tobytes(), image.shape[0], image.shape[1]) if result else None
+    return ((image.flatten().tobytes(), image.shape[0], image.shape[1])
+            if result else None)
 
 
 if __name__ == "__main__":

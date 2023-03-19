@@ -1,18 +1,6 @@
-import argparse
 import socket
 import numpy as np
-import cv2
-from qdrant_client import QdrantClient
-
-
-
-def main():
-    with open('qdrant_key.txt', 'r') as f:
-        hostname = f.readline().rstrip()
-        key = f.readline().rstrip()
-
-    qdrant_client = QdrantClient(host=hostname,
-                                 api_key=key)
+import matplotlib.pyplot as plt
 
 
 def request_image():
@@ -45,8 +33,13 @@ def request_image():
         height = int.from_bytes(height, 'little')
         width = int.from_bytes(width, 'little')
 
-        return np.flip(np.frombuffer(image, dtype=np.uint8).reshape((height, width, 3)), axis=2)
+        return np.flip(np.frombuffer(image, dtype=np.uint8)
+                       .reshape((height, width, 3)), axis=2)
 
 
+# For testing purposes
 if __name__ == "__main__":
-    main()
+    image = request_image()
+    if image is not None:
+        plt.imshow(image)
+        plt.show()
