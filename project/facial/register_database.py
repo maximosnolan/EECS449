@@ -5,7 +5,7 @@ import face_recognition
 import numpy as np
 import hashlib
 from typing import Dict, List
-from exceptions import FaceAlreadyExistsException
+from facialExceptions import FaceAlreadyExistsException
 from qdrant import get_encodings,search
 from datetime import datetime
 # Constants

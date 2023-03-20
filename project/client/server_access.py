@@ -1,8 +1,9 @@
 import socket
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
-
+WRITE_IMAGE_PATH = "../img"
 def request_image():
     """
     :return: (H x W x 3) (RGB) np.ndarray representing the image
@@ -35,7 +36,16 @@ def request_image():
         return np.flip(np.frombuffer(image, dtype=np.uint8)
                        .reshape((height, width, 3)), axis=2)
 
+def save_image(img):
+    if img is not None:
+        plt.imshow(img)
+        script_dir = os.path.dirname(__file__)
+        results_dir = os.path.join('../', 'CapturedImages/')
 
+        if not os.path.isdir(results_dir):
+            os.makedirs(results_dir)
+        name = "capturedImage"
+        plt.savefig(results_dir + name)
 # For testing purposes
 if __name__ == "__main__":
     image = request_image()

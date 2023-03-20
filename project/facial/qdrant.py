@@ -5,7 +5,7 @@ import face_recognition
 import numpy as np
 import hashlib
 from typing import Dict, List
-from exceptions import FaceAlreadyExistsException
+from facialExceptions import FaceAlreadyExistsException
 from datetime import datetime
 # Constants
 SIMILARITY_THRESHOLD = 0.54
@@ -63,6 +63,9 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
                     'birthday': birthday,
                     'relations': relations,
                     'lastVisitDate' : datetime.today().strftime('%Y-%m-%d'),
+                    'numberOfVisits': 0,
+                    'reasonForLastVisit' : "none",
+                    'peopleKnown' : [],
                     'numberOfVisits': 0
                 }
             )
