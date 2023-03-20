@@ -1,5 +1,6 @@
 import speech_recognition as sr
 import pyttsx3
+import doorman as d
 
 # import doorman from Doorman
 # d = Doorman()
@@ -7,7 +8,7 @@ import pyttsx3
 
 # Initialize speech engine
 engine = pyttsx3.init()
-
+driver = d.Doorman()
 r = sr.Recognizer()
 mic = sr.Microphone()
 
@@ -28,10 +29,9 @@ def callback(recognizer, audio):
 
         # TODO: Still need to integrate doorman class
         # here, we will pass sentence to the doorman class, and that will return a response in the form of a string
-        # response = doorman(sentence)
+        response = driver.handleRequest(sentence)
 
         # this can be commented out once the nlp class is implemented
-        response = "John is at the door"
 
         engine.say("Sentence: " + response)
         engine.runAndWait()
@@ -46,5 +46,9 @@ def callback(recognizer, audio):
 stop_listening = r.listen_in_background(mic, callback)
 
 # keep the main thread alive
-while True:
-    pass
+def main():
+    while True:
+        pass
+
+if __name__ == '__main__':
+    main()
