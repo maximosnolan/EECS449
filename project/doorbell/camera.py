@@ -1,4 +1,5 @@
 import cv2
+import time
 import socket
 
 
@@ -44,6 +45,7 @@ def capture_image():
              if no image was captured
     """
     cam = cv2.VideoCapture(0)
+    time.sleep(3)
     result, image = cam.read()
     return ((image.flatten().tobytes(), image.shape[0], image.shape[1])
             if result else None)
