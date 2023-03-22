@@ -48,6 +48,7 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
             f'registered face: {results[0].payload["name"]}')
 
     # Insert the record into the database
+    print(datetime.today().strftime('%m-%d-%Y'))
     qdrant_client.upsert(
         collection_name=FACE_COLLECTION_NAME,
         points=[
@@ -58,7 +59,7 @@ def register_face(face_encoding: np.array, name: str, birthday: str, relations: 
                     'name': name,
                     'birthday': birthday,
                     'relations': relations,
-                    'lastVisitDate' : datetime.today().strftime('%Y-%m-%d'),
+                    'lastVisitDate' : datetime.today().strftime('%m-%d-%Y'),
                     'numberOfVisits': 0,
                     'reasonForLastVisit' : reason,
                     'peopleKnown' : peopleKnown

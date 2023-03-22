@@ -13,7 +13,7 @@ from qdrant_client.models import ScoredPoint
 from facial.qdrant import get_encodings,search
 from facial.facialExceptions import FaceAlreadyExistsException
 from facial.serializeQdrant import *
-
+from util import convertDate
 # TODO: make local?
 modelPath = 'all-MiniLM-L6-v2'
 #modelPath = 'local/multi-qa-MiniLM-L6-dot-v1'
@@ -22,6 +22,7 @@ INTENTS_CSV = 'intents.csv'
 
 SIMILARITY_THRESHOLD = 0.54
 FACE_COLLECTION_NAME = 'faces'
+ACCEPTANCE_THRESHOLD = 0.775
 
 ERROR_UNABLE_TO_CAPTURE_FACE = "Unable to determine if there is a person at the door."
 
@@ -89,7 +90,8 @@ class Doorman:
             if max_sim < sim:
                 max_sim = sim
                 max_sim_id = id
-        if max_sim > 0.9:
+        print("For sentance ", user_speech, " best score was " , max_sim)
+        if max_sim > ACCEPTANCE_THRESHOLD:
             return max_sim_id
         return None
 
@@ -102,7 +104,8 @@ class Doorman:
         if intent_id == 0:
             return f"{self.v_data['name']} is at the door"
         elif intent_id == 1:
-            return f"{self.v_data['name']} was last here on {self.v_data['lastVisitDate']}"
+            englishDate = convertDate(self.v_data['lastVisitDate'])
+            return f"{self.v_data['name']} was last here on {englishDate}"
         elif intent_id == 2:
             return f"{self.v_data['name']} is registered on the doorman service"
         elif intent_id == 3:
@@ -122,7 +125,7 @@ class Doorman:
                 return f"{self.v_data['name']} has no record of knoowing anyone here"
             return f"{self.v_data['name']} knows the following people, {relationships_text}"
 
-        return "HUH??"
+        return "Unrecognized intent. Internal Error."
     def _embed_intents(self, intents_df):
         intents_embeddings = []
         for i, row in intents_df.iterrows():
