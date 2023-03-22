@@ -113,7 +113,7 @@ if __name__ == '__main__':
                     print(e)
             elif image == Path('images/maximos0.jpg'):
                 try:
-                    register_face(encodings[0], "Max", 'MM-DD-YYYY', ["manager at arbys"], "investigated dog nappings", ["your mother"])
+                    register_face(encodings[0], "Max", '01-14-2001', ["manager at arbys"], "investigated dog nappings", ["your mother"])
                 except FaceAlreadyExistsException as e:
                     print(e)
 

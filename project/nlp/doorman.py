@@ -17,7 +17,6 @@ from util import convertDate
 # TODO: make local?
 #modelPath = 'all-MiniLM-L6-v2'
 modelPath = 'multi-qa-MiniLM-L6-dot-v1'
-#modelPath = 'local/multi-qa-MiniLM-L6-dot-v1'
 model = SentenceTransformer(modelPath)
 INTENTS_CSV = 'intents.csv'
 
@@ -55,6 +54,7 @@ class Doorman:
 
         self.qdrant_client = QdrantClient(host=hostname,
                                     api_key=key)
+        self.serializedPerson = None
 
 
     def handleRequest(self, user_speech: str) -> str:
@@ -75,7 +75,7 @@ class Doorman:
             if len(results) == 1:
                 self.v_data = results[0].payload
                 print("got a match")
-                serializedPerson = person(results[0].payload)
+                self.serializedPerson = person(results[0].payload)
                 self.last_visitor_id = 2
         self.intent_id = self._get_intent(user_speech)
         text_response = self._get_response(self.intent_id)
@@ -125,6 +125,21 @@ class Doorman:
             else:
                 return f"{self.v_data['name']} has no record of knoowing anyone here"
             return f"{self.v_data['name']} knows the following people, {relationships_text}"
+        elif intent_id == 5:
+            englishDate = convertDate(self.v_data['birthday'])
+            return f"{self.v_data['name']}'s birthday is {englishDate}"
+        elif intent_id == 6:
+            return f"{self.v_data['name']} was here last time for {self.v_data['reasonForLastVisit']}"
+        elif intent_id == 7:
+            englishDate = convertDate(datetime.today().strftime('%m-%d-%Y'))
+            self.serializedPerson.updateLastDateOfVisit()
+            #self.v_data['lastVisitDate'] = self.serializedPerson.getLastVisitDate()
+            self.serializedPerson.updateNumberOfVisits()
+            #self.v_data['numberOfVisits'] +=1
+            return f"{self.v_data['name']} last visit date was changed to be today, which is {englishDate}, and their number of visits is now {self.v_data['numberOfVisits']}"
+        elif intent_id ==8:
+            return f"{self.v_data['name']} has been here {self.v_data['numberOfVisits']} times"
+
 
         return "Unrecognized intent. Internal Error."
     def _embed_intents(self, intents_df):

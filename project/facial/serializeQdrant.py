@@ -113,7 +113,7 @@ class person:
 
     def updateLastDateOfVisit(self):
         payload={
-            "lastVisitDate": datetime.today().strftime('%Y-%m-%d'),
+            "lastVisitDate": datetime.today().strftime('%m-%d-%Y'),
         }
         self.writePayload(payload)
 
