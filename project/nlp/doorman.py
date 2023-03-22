@@ -23,6 +23,7 @@ INTENTS_CSV = 'intents.csv'
 SIMILARITY_THRESHOLD = 0.54
 FACE_COLLECTION_NAME = 'faces'
 
+ERROR_UNABLE_TO_CAPTURE_FACE = "Unable to determine if there is a person at the door."
 
 def search(client: QdrantClient, face_encoding):
     return client.search(
@@ -57,13 +58,16 @@ class Doorman:
     def handleRequest(self, user_speech: str) -> str:
         """Returns the text response to the user's input"""
         # if the visitor is new
-        if (time.time() - self.last_visitor_time < self.VISITOR_TIME_DELAY_ALLOWED or self.v_data == None):
+        if (time.time() - self.last_visitor_time > self.VISITOR_TIME_DELAY_ALLOWED or self.v_data == None):
+            self.last_visitor_time = time.time()
             # call camera and get rbg ndarray
             image = camera_client.request_image()
             camera_client.save_image(image)
             #face_embeddings = face_recognition.face_encodings(image)
             imgPath = Path('../CapturedImages/capturedImage.png')
             face_embeddings = get_encodings(imgPath)
+            if len(face_embeddings) == 0:
+                return ERROR_UNABLE_TO_CAPTURE_FACE
             # call call qdrant
             results = search(self.qdrant_client, face_embeddings[0])
             if len(results) == 1:
@@ -90,6 +94,7 @@ class Doorman:
         return None
 
     def _get_response(self, intent_id: int) -> str:
+        print("generating response")
         if self.last_visitor_id == None:
             return "I'm not who is at the door"
         if self.intent_id == None:
@@ -97,13 +102,27 @@ class Doorman:
         if intent_id == 0:
             return f"{self.v_data['name']} is at the door"
         elif intent_id == 1:
-            return f"{self.v_data['name']} was last here on {self.v_data['last_visit_date']}"
+            return f"{self.v_data['name']} was last here on {self.v_data['lastVisitDate']}"
         elif intent_id == 2:
-            if self.v_data['relationship'] >= 2:
-                relationships_text = ", ".join(self.v_data['relationship'][:-1]) + ", and " + self.v_data['relationship'][1]
+            return f"{self.v_data['name']} is registered on the doorman service"
+        elif intent_id == 3:
+            if len(self.v_data['relations']) >= 2:
+                relationships_text = ", ".join(self.v_data['relations'][:-1]) + ", and " + self.v_data['relations'][1]
+            elif len(self.v_data['relations']) == 1:
+                relationships_text = self.v_data['relations'][0]
             else:
-                relationships_text = self.v_data['relationship'][0]
-            return f"{self.v_data['data']} is related to you by being {relationships_text}"
+                return f"{self.v_data['name']} has no recorded relationships with you."
+            return f"{self.v_data['name']} is related to you by being {relationships_text}"
+        elif intent_id == 4:
+            if len(self.v_data['peopleKnown']) >= 2:
+                relationships_text = ", ".join(self.v_data['peopleKnown'][:-1]) + ", and " + self.v_data['peopleKnown'][1]
+            elif len(self.v_data['peopleKnown']) == 1:
+                relationships_text = self.v_data['peopleKnown'][0]
+            else:
+                return f"{self.v_data['name']} has no record of knoowing anyone here"
+            return f"{self.v_data['name']} knows the following people, {relationships_text}"
+
+        return "HUH??"
     def _embed_intents(self, intents_df):
         intents_embeddings = []
         for i, row in intents_df.iterrows():
