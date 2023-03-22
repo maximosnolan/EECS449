@@ -15,7 +15,8 @@ from facial.facialExceptions import FaceAlreadyExistsException
 from facial.serializeQdrant import *
 from util import convertDate
 # TODO: make local?
-modelPath = 'all-MiniLM-L6-v2'
+#modelPath = 'all-MiniLM-L6-v2'
+modelPath = 'multi-qa-MiniLM-L6-dot-v1'
 #modelPath = 'local/multi-qa-MiniLM-L6-dot-v1'
 model = SentenceTransformer(modelPath)
 INTENTS_CSV = 'intents.csv'
