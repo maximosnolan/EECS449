@@ -152,7 +152,11 @@ class Doorman:
                 return "Multiple users are detected. We cannot handle this feature yet!"
             else:
                 # Register face using qdrant
-                register_face(embeddings[0], self.v_data['name'], self.v_data['birthday'], self.v_data['relations'])
+                # does not have any data for name, birthday, or relations yet
+                try:
+                    register_face(embeddings[0], self.v_data['name'], self.v_data['birthday'], self.v_data['relations'])
+                except FaceAlreadyExistsException as e:
+                    print(e)
                 return f"{self.v_data['name']} has been added to the recognized users list"
         else:
             return "Unrecognized intent. Internal Error."
