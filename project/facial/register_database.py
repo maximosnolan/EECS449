@@ -13,7 +13,7 @@ SIMILARITY_THRESHOLD = 0.6
 FACE_COLLECTION_NAME = 'faces'
 
 
-def register_face(face_encoding: np.array, name: str, birthday: str, relations: list[str], reason: str, peopleKnown: list[str]):
+def register_face(face_encoding: np.array, name: str, birthday: str, relations: list[str], reason: str, peopleKnown: list[str]) -> None:
     """
     Registers a face in the database
     :param face_encoding:

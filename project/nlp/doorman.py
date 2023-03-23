@@ -82,7 +82,10 @@ class Doorman:
         return text_response
 
     def _get_intent(self, user_speech: str) -> int:
-        """Returns the id of the most similar intent to the user's input or None if there is no reasonable match."""
+        """Returns the id of the most similar intent to the user's input or None if there is no reasonable match.
+        :param user_speech:
+        :return int:
+        """
         user_embeddings = model.encode(user_speech)
         max_sim = -1.1
         max_sim_id = None
@@ -91,12 +94,16 @@ class Doorman:
             if max_sim < sim:
                 max_sim = sim
                 max_sim_id = id
-        print("For sentance ", user_speech, " best score was " , max_sim)
+        print("For sentence ", user_speech, " best score was " , max_sim)
         if max_sim > ACCEPTANCE_THRESHOLD:
             return max_sim_id
         return None
 
     def _get_response(self, intent_id: int) -> str:
+        """Obtains response from intent_id, otherwise return a string to report no action take.
+        :param intent_id:
+        :return: str
+        """
         print("generating response")
         if self.last_visitor_id == None:
             return "I'm not who is at the door"
@@ -137,11 +144,13 @@ class Doorman:
             self.serializedPerson.updateNumberOfVisits()
             #self.v_data['numberOfVisits'] +=1
             return f"{self.v_data['name']} last visit date was changed to be today, which is {englishDate}, and their number of visits is now {self.v_data['numberOfVisits']}"
-        elif intent_id ==8:
+        elif intent_id == 8:
             return f"{self.v_data['name']} has been here {self.v_data['numberOfVisits']} times"
+        elif intent_id == 9:
+            return f"{self.v_data['name']} has been added to the recognized users list"
+        else:
+            return "Unrecognized intent. Internal Error."
 
-
-        return "Unrecognized intent. Internal Error."
     def _embed_intents(self, intents_df):
         intents_embeddings = []
         for i, row in intents_df.iterrows():

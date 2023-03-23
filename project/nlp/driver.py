@@ -8,9 +8,9 @@ import doorman as d
 
 # Initialize speech engine
 engine = pyttsx3.init()
-voices = engine.getProperty('voices')#fetching different voices from the system
-engine.setProperty('voice', voices[10].id)#setting voice properties
-engine.setProperty('rate', 120)#sets speed of speech
+voices = engine.getProperty('voices') # fetching different voices from the system
+engine.setProperty('voice', voices[10].id) # setting voice properties
+engine.setProperty('rate', 120) # sets speed of speech
 driver = d.Doorman()
 r = sr.Recognizer()
 mic = sr.Microphone()
@@ -18,7 +18,7 @@ mic = sr.Microphone()
 # set the keyword to be detected
 keyword = "doorman"
 
-#set greeting
+# set greeting
 greeting = "I am your doorman. How can I help you?"
 # define a callback function to process the detected text
 def callback(recognizer, audio):
