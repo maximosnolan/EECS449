@@ -10,7 +10,7 @@ import face_recognition
 from sentence_transformers import util, SentenceTransformer
 from qdrant_client import QdrantClient
 from qdrant_client.models import ScoredPoint
-from facial.qdrant import get_encodings,search
+from facial.qdrant import get_encodings,search, register_face
 from facial.facialExceptions import FaceAlreadyExistsException
 from facial.serializeQdrant import *
 from util import convertDate
@@ -78,7 +78,7 @@ class Doorman:
                 self.serializedPerson = person(results[0].payload)
                 self.last_visitor_id = 2
         self.intent_id = self._get_intent(user_speech)
-        text_response = self._get_response(self.intent_id)
+        text_response = self._get_response(self.intent_id, face_embeddings)
         return text_response
 
     def _get_intent(self, user_speech: str) -> int:
@@ -99,9 +99,10 @@ class Doorman:
             return max_sim_id
         return None
 
-    def _get_response(self, intent_id: int) -> str:
+    def _get_response(self, intent_id: int, embeddings: np.array) -> str:
         """Obtains response from intent_id, otherwise return a string to report no action take.
         :param intent_id:
+        :param embeddings: takes in embeddings in case we need to add a new person
         :return: str
         """
         print("generating response")
@@ -147,7 +148,12 @@ class Doorman:
         elif intent_id == 8:
             return f"{self.v_data['name']} has been here {self.v_data['numberOfVisits']} times"
         elif intent_id == 9:
-            return f"{self.v_data['name']} has been added to the recognized users list"
+            if (len(embeddings) > 1) :
+                return "Multiple users are detected. We cannot handle this feature yet!"
+            else:
+                # Register face using qdrant
+                register_face(embeddings[0], self.v_data['name'], self.v_data['birthday'], self.v_data['relations'])
+                return f"{self.v_data['name']} has been added to the recognized users list"
         else:
             return "Unrecognized intent. Internal Error."
 
