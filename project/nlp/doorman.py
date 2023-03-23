@@ -57,7 +57,7 @@ class Doorman:
         self.serializedPerson = None
 
 
-    def handleRequest(self, user_speech: str) -> str:
+    def handleRequest(self, user_speech: str):
         """Returns the text response to the user's input"""
         # if the visitor is new
         if (time.time() - self.last_visitor_time > self.VISITOR_TIME_DELAY_ALLOWED or self.v_data == None):
@@ -78,8 +78,8 @@ class Doorman:
                 self.serializedPerson = person(results[0].payload)
                 self.last_visitor_id = 2
         self.intent_id = self._get_intent(user_speech)
-        text_response = self._get_response(self.intent_id, face_embeddings)
-        return text_response
+        text_response = self._get_response(self.intent_id)
+        return (text_response, face_embeddings)
 
     def _get_intent(self, user_speech: str) -> int:
         """Returns the id of the most similar intent to the user's input or None if there is no reasonable match.
@@ -99,10 +99,9 @@ class Doorman:
             return max_sim_id
         return None
 
-    def _get_response(self, intent_id: int, embeddings: np.array) -> str:
+    def _get_response(self, intent_id: int) -> str:
         """Obtains response from intent_id, otherwise return a string to report no action take.
         :param intent_id:
-        :param embeddings: takes in embeddings in case we need to add a new person
         :return: str
         """
         print("generating response")
@@ -148,16 +147,7 @@ class Doorman:
         elif intent_id == 8:
             return f"{self.v_data['name']} has been here {self.v_data['numberOfVisits']} times"
         elif intent_id == 9:
-            if (len(embeddings) > 1) :
-                return "Multiple users are detected. We cannot handle this feature yet!"
-            else:
-                # Register face using qdrant
-                # does not have any data for name, birthday, or relations yet
-                try:
-                    register_face(embeddings[0], self.v_data['name'], self.v_data['birthday'], self.v_data['relations'])
-                except FaceAlreadyExistsException as e:
-                    print(e)
-                return f"{self.v_data['name']} has been added to the recognized users list"
+            return "Please specify the name of the person you want to add."
         else:
             return "Unrecognized intent. Internal Error."
 
@@ -167,3 +157,10 @@ class Doorman:
             embeddings = model.encode(row.intent)
             intents_embeddings.append((embeddings,row.id))
         return intents_embeddings
+    
+    def add_new_user(self, name: str, embeddings: np.array):
+        try:
+                register_face(embeddings[0], name, self.v_data['birthday'], self.v_data['relations'])
+        except FaceAlreadyExistsException as e:
+                print(e)
+        return f"{name} added to the database."

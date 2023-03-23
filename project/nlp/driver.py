@@ -34,12 +34,22 @@ def callback(recognizer, audio):
         print("Doorman recieved msg with content: ", sentence)
 
         # here, we will pass sentence to the doorman class, and that will return a response in the form of a string
-        response = driver.handleRequest(sentence)
-
-        # this can be commented out once the nlp class is implemented
-
+        response, embeddings = driver.handleRequest(sentence)
         engine.say(response)
         engine.runAndWait()
+
+        if response == "Please specify the name of the person you want to add.":
+            engine.say(response)
+            engine.runAndWait()
+            audio = recognizer.listen(mic)
+            sentence = recognizer.recognize_google(audio)
+            print("Name: ", sentence)
+            response = driver.add_new_user(sentence, embeddings)
+            engine.say(response)
+            engine.runAndWait()
+
+
+        # this can be commented out once the nlp class is implemented
 
         # stop listening for more input
         #stop_listening(wait_for_stop=False)

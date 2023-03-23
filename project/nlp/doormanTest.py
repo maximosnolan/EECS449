@@ -5,37 +5,37 @@ def main():
     print("driver created!")
 
     intentOne = "Who is at the door"
-    response = driver.handleRequest(intentOne)
+    response, _ = driver.handleRequest(intentOne)
     print(response)
 
     intentTwo = "when was the person at the door last here"
-    response = driver.handleRequest(intentTwo)
+    response, _ = driver.handleRequest(intentTwo)
     print(response)
 
     intentThree = "how do I know this person"
-    response = driver.handleRequest(intentThree)
+    response, _ = driver.handleRequest(intentThree)
     print(response)
 
 
     intentFour = "who does this person know here"
-    response = driver.handleRequest(intentFour)
+    response, _ = driver.handleRequest(intentFour)
     print(response)
 
     intentFive = "when was their birthday"
-    response = driver.handleRequest(intentFive)
+    response, _ = driver.handleRequest(intentFive)
     print(response)
 
     intentSix = "why were they here"
-    response = driver.handleRequest(intentSix)
+    response, _ = driver.handleRequest(intentSix)
     print(response)
 
 
     intentSeven = "update the date of last visit"
-    response = driver.handleRequest(intentSeven)
+    response, _ = driver.handleRequest(intentSeven)
     print(response)
 
     intentEight = "how many times have they been here"
-    response = driver.handleRequest(intentEight)
+    response, _ = driver.handleRequest(intentEight)
     print(response)
 if __name__ == "__main__":
     main()
