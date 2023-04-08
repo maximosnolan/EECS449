@@ -21,14 +21,18 @@ keyword = "doorman"
 #set greeting
 greeting = "I am your doorman. How can I help you?"
 # define a callback function to process the detected text
+print("\n\n\n")
+print("Welcome to the doorman AI. Please say or type in a phrase and our doorman will do their best to help you!")
+print("\n\n\n")
 def drive():
         # use the Sphinx recognizer to convert speech to text
-        text = input("I am your doorman, how can I help you?")
+        text = input("I am your doorman, how can I help you?\ninput --> ")
+        print("\n\n")
         engine.say(greeting)
         engine.runAndWait()
 
         # listen for the next sentence
-        print("Doorman recieved msg with content: ", text)
+        #print("Doorman recieved msg with content: ", text)
 
         # here, we will pass sentence to the doorman class, and that will return a response in the form of a string
         response = driver.handleRequest(text)
@@ -37,7 +41,9 @@ def drive():
 
         engine.say(response)
         engine.runAndWait()
+        print("\n\n")
         print("Doorman response:", response)
+        print("\n\n")
 
         # stop listening for more input
         #stop_listening(wait_for_stop=False)

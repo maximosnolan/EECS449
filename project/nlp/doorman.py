@@ -91,15 +91,15 @@ class Doorman:
             if max_sim < sim:
                 max_sim = sim
                 max_sim_id = id
-        print("For sentance ", user_speech, " best score was " , max_sim)
+        print("For user input ", user_speech, "\nBest score was " , max_sim)
         if max_sim > ACCEPTANCE_THRESHOLD:
             return max_sim_id
         return None
 
     def _get_response(self, intent_id: int) -> str:
-        print("generating response")
+        print("generating response...")
         if self.last_visitor_id == None:
-            return "I'm not who is at the door"
+            return "I'm not sure who is at the door"
         if self.intent_id == None:
             return "I'm not sure what you meant by that, please rephrase"
         if intent_id == 0:
